@@ -103,7 +103,12 @@ class CortexSearchService:
                 logger.warning("No connection.json file found in expected locations")
                 return None
             
-            # Create session using connection parameters
+            # Extract and store cortex search service name if provided
+            if 'cortex_search_service' in connection_parameters:
+                self.cortex_search_service = connection_parameters.pop('cortex_search_service')
+                logger.info(f"Using Cortex Search service from config: {self.cortex_search_service}")
+            
+            # Create session using connection parameters (without the cortex_search_service key)
             session = Session.builder.configs(connection_parameters).create()
             logger.info(f"Successfully connected using connection.json from {config_file_used}")
             return session

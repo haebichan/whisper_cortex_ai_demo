@@ -5,5 +5,6 @@
     "warehouse": "${SNOWFLAKE_WAREHOUSE}",
     "database": "${SNOWFLAKE_DATABASE}",
     "schema": "${SNOWFLAKE_SCHEMA}",
-    "role": "${SNOWFLAKE_ROLE}"
+    "role": "${SNOWFLAKE_ROLE}",
+    "cortex_search_service": "haebi_cortex_search_service"
 }
