@@ -16,3 +16,7 @@ twilio
 
 # Utilities
 pathlib2>=2.3.0
+
+# Snowflake dependencies for Cortex Search
+snowflake-snowpark-python
+snowflake-connector-python

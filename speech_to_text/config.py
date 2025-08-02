@@ -8,7 +8,7 @@ from typing import Optional, List
 @dataclass
 class AudioConfig:
     """Audio processing configuration."""
-    chunk_duration: int = 3
+    chunk_duration: int = 5
     sample_rate: int = 16000
     channels: int = 1
     min_chunk_length_ms: int = 500

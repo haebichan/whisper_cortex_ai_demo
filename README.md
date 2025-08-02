@@ -1,197 +1,234 @@
-# Real-Time Speech-to-Text with OpenAI Whisper
+# 🎤 Voice-Powered Cortex Search
 
-A modular Streamlit application that provides real-time speech-to-text transcription using OpenAI's Whisper model and WebRTC for audio streaming.
+A comprehensive Streamlit application that combines real-time speech-to-text transcription with intelligent document search and AI-powered responses. Speak your questions and get instant, accurate answers from your knowledge base!
 
-## Features
+## 🌟 Features
 
-- **Real-time transcription**: Convert speech to text in real-time using WebRTC
-- **Multiple Whisper models**: Choose from tiny, base, small, medium, or large models
-- **Language support**: Auto-detection or manual language selection
-- **Two modes**: Audio-only or video+audio streaming
-- **Configurable settings**: Adjustable chunk duration and audio processing parameters
-- **Clean architecture**: Modular design for easy maintenance and extension
+- **🎤 Real-time Speech Recognition**: Convert speech to text using OpenAI's Whisper models
+- **🔍 Intelligent Document Search**: Search your knowledge base using Snowflake Cortex Search
+- **🤖 AI-Powered Responses**: Get summarized, contextual answers using LLMs
+- **💬 Interactive Chat Interface**: Conversation-style interface with chat history
+- **🎛️ Flexible Configuration**: Customizable audio settings, model selection, and search parameters
+- **🌐 Multiple Input Modes**: Voice input OR manual text input
+- **📹 Video Support**: Optional video chat mode with audio transcription
 
-## Architecture
+## 🏗️ Architecture
 
-The application is organized into several modules for clean separation of concerns:
+The application is built with a clean, modular architecture:
 
 ```
 speech_to_text/
 ├── __init__.py                 # Package initialization
-├── main.py                     # Main application entry point
+├── main.py                     # Main application orchestration
 ├── config.py                   # Configuration management
 ├── network.py                  # WebRTC and network configuration
-├── audio_processor.py          # Audio processing utilities
+├── audio_processor.py          # Audio frame processing
 ├── whisper_service.py          # Whisper model management
-├── ui_components.py            # UI components and interactions
-├── webrtc_handlers.py          # WebRTC stream handlers
+├── cortex_service.py           # Cortex Search integration ⭐ NEW
+├── ui_components.py            # Enhanced UI components
+├── webrtc_handlers.py          # WebRTC stream handlers with search
 └── logger_setup.py             # Logging configuration
 ```
 
-### Module Overview
+### 🔄 Workflow
 
-- **config.py**: Centralized configuration management with dataclasses for different components
-- **network.py**: Handles ICE server configuration and WebRTC networking
-- **audio_processor.py**: Manages audio frame accumulation and processing
-- **whisper_service.py**: Encapsulates Whisper model loading and transcription logic
-- **ui_components.py**: Reusable UI components and user interaction handling
-- **webrtc_handlers.py**: Separate handlers for audio-only and video+audio modes
-- **logger_setup.py**: Centralized logging configuration
-- **main.py**: Application orchestration and main entry point
+1. **🎤 Voice Input**: User speaks into microphone
+2. **📝 Transcription**: Whisper converts speech to text
+3. **🔍 Search**: Query is sent to Cortex Search service
+4. **📚 Retrieval**: Relevant documents are found and retrieved
+5. **🤖 AI Processing**: LLM summarizes findings into a clear answer
+6. **💬 Response**: Answer is displayed in chat interface
 
-## Installation
+## 🚀 Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
 ```bash
 git clone <repository-url>
-cd speech-to-text-app
+cd voice-cortex-search
 ```
 
-2. Install dependencies:
+2. **Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. (Optional) Set up Twilio credentials for TURN server support:
+3. **Set up Snowflake environment** (required for Cortex Search):
+   - Ensure you have access to a Snowflake account with Cortex Search enabled
+   - Set up your Cortex Search service in Snowflake
+   - Note your search service name (default: `haebi_cortex_search_service`)
+
+4. **(Optional) Configure Twilio for better WebRTC**:
 ```bash
 export TWILIO_ACCOUNT_SID="your_account_sid"
 export TWILIO_AUTH_TOKEN="your_auth_token"
 ```
 
-## Usage
+## 🎯 Usage
 
 ### Running the Application
 
 ```bash
-streamlit run main.py
-```
-
-Or import and run programmatically:
-
-```python
-from speech_to_text import main
-main()
+streamlit run app.py
 ```
 
 ### Configuration Options
 
-- **Model Size**: Choose between tiny (fastest) to large (most accurate)
-- **Chunk Duration**: Adjust how often transcription occurs (1-10 seconds)
-- **Language**: Select specific language or use auto-detection
-- **Mode**: Choose between audio-only or video+audio streaming
+#### 🎤 Audio Settings
+- **Model Size**: Choose Whisper model (tiny → large for speed → accuracy trade-off)
+- **Chunk Duration**: How often to process audio (1-10 seconds)
+- **Language**: Specific language or auto-detection
 
-## Configuration
+#### 🔍 Cortex Search Settings
+- **Search Service Name**: Your Cortex Search service identifier
+- **Document Chunk Limit**: Number of document chunks to retrieve (1-10)
+- **Auto-search**: Automatically search when speech is transcribed
 
-The application uses several configuration classes:
+#### 🎛️ Interface Modes
+- **Sound only**: Audio-only transcription and search
+- **With video**: Video chat interface with audio processing
 
-### AudioConfig
-- `chunk_duration`: How often to transcribe (default: 3 seconds)
-- `sample_rate`: Audio sample rate (default: 16000 Hz)
-- `channels`: Number of audio channels (default: 1)
+### 💡 How to Use
 
-### WhisperConfig
-- `model_size`: Whisper model size (default: "base")
-- `language`: Language code or None for auto-detection
-- `fp16`: Use half-precision floating point (default: True)
+1. **Start the application** and ensure Cortex Search shows "Connected" ✅
+2. **Click "START"** on the WebRTC component
+3. **Speak your question** clearly into the microphone
+4. **Watch the magic happen**:
+   - Your speech is transcribed in real-time
+   - The system searches your knowledge base
+   - You get an intelligent, summarized answer
+5. **Continue the conversation** - chat history is maintained
+6. **Use manual input** for text-based queries when needed
 
-### TwilioConfig
-- Automatically loads from environment variables
-- Falls back to Google STUN server if not configured
+## 🔧 Configuration
 
-## Extending the Application
+### Cortex Search Setup
 
-### Adding New Audio Processing Features
+Your Snowflake environment needs:
+```sql
+-- Example Cortex Search service (adjust to your setup)
+CREATE CORTEX SEARCH SERVICE haebi_cortex_search_service
+ON your_documents_table
+WAREHOUSE = your_warehouse;
+```
 
-Extend the `AudioProcessor` class in `audio_processor.py`:
+### Application Configuration
+
+All major components are configurable:
 
 ```python
-class CustomAudioProcessor(AudioProcessor):
-    def custom_processing_method(self):
-        # Your custom logic here
-        pass
+# Audio processing
+AudioConfig(
+    chunk_duration=3,      # Seconds between transcriptions
+    sample_rate=16000,     # Audio sample rate
+    channels=1             # Mono audio
+)
+
+# Whisper transcription
+WhisperConfig(
+    model_size="base",     # tiny, base, small, medium, large
+    language=None,         # Auto-detect or specify language
+    fp16=True             # Use half-precision for speed
+)
+
+# Cortex Search
+CortexSearchService(
+    cortex_search_service="your_service_name",
+    chunk_limit=2          # Number of document chunks
+)
 ```
 
-### Adding New UI Components
+## 🎨 UI Features
 
-Add methods to the `UIComponents` class in `ui_components.py`:
+### Enhanced Interface
+- **🎤 Visual Status Indicators**: Clear feedback on what the system is doing
+- **💬 Chat-Style Conversation**: Familiar messaging interface
+- **📊 Real-time Transcription**: See your words as they're transcribed
+- **🔍 Search Results Display**: Clear presentation of queries and answers
+- **⚙️ Sidebar Controls**: Easy access to all configuration options
 
+### Status Icons
+- 🎤 **Listening**: Ready for voice input
+- ⚙️ **Processing**: Transcribing speech
+- 🔍 **Searching**: Querying knowledge base
+- ✅ **Success**: Operation completed
+- ❌ **Error**: Something went wrong
+
+## 🚀 Advanced Features
+
+### Multiple Input Methods
 ```python
-class UIComponents:
-    @staticmethod
-    def render_custom_component():
-        # Your custom UI component
-        pass
+# Voice input (primary)
+speak_your_question()
+
+# Manual text input (fallback)
+type_your_question()
+
+# Both methods use the same search pipeline
 ```
 
-### Custom Configuration
+### Conversation Management
+- **Chat History**: All interactions are saved in session
+- **Clear Chat**: Reset conversation with one click
+- **Timestamps**: Track when each interaction occurred
 
-Create custom configuration classes following the pattern in `config.py`:
+### Error Handling
+- **Graceful Degradation**: Works with just transcription if search fails
+- **Connection Testing**: Automatic Cortex Search connectivity checks
+- **Fallback Options**: Multiple STUN servers for WebRTC reliability
 
-```python
-@dataclass
-class CustomConfig:
-    custom_parameter: str = "default_value"
-```
-
-## Development
-
-### Running in Debug Mode
-
-```bash
-export DEBUG=true
-streamlit run main.py
-```
-
-### Testing
-
-The modular architecture makes it easy to unit test individual components:
-
-```python
-# Example: Testing audio processor
-from speech_to_text.audio_processor import AudioProcessor
-from speech_to_text.config import AudioConfig
-
-config = AudioConfig(chunk_duration=2)
-processor = AudioProcessor(config)
-# ... your tests
-```
-
-## Dependencies
-
-- **streamlit**: Web application framework
-- **streamlit-webrtc**: WebRTC integration for Streamlit
-- **openai-whisper**: Speech recognition model
-- **av**: Audio/video processing
-- **pydub**: Audio manipulation
-- **twilio**: TURN server support
-- **torch**: PyTorch for ML inference
-- **numpy**: Numerical computing
-
-## Environment Variables
-
-- `TWILIO_ACCOUNT_SID`: Twilio account SID (optional)
-- `TWILIO_AUTH_TOKEN`: Twilio auth token (optional)
-- `DEBUG`: Enable debug logging (optional)
-
-## Troubleshooting
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **Audio not working**: Ensure microphone permissions are granted in your browser
-2. **Model loading errors**: Check that you have sufficient RAM for the selected model
-3. **Connection issues**: Verify Twilio credentials or check network configuration
-4. **Performance issues**: Try using a smaller Whisper model (tiny or base)
+1. **🔴 Cortex Search: Not Connected**
+   - Verify you're running in a Snowflake environment
+   - Check your search service name
+   - Ensure proper permissions
+
+2. **🎤 Audio Not Working**
+   - Grant microphone permissions in browser
+   - Try different browsers (Chrome recommended)
+   - Check WebRTC connectivity
+
+3. **⚡ Performance Issues**
+   - Use smaller Whisper models (tiny/base)
+   - Adjust chunk duration
+   - Check network connection
 
 ### Performance Optimization
 
-- Use smaller Whisper models for faster transcription
-- Adjust chunk duration based on your needs
-- Enable GPU acceleration if available (automatic with CUDA)
+- **🏃 Speed**: Use `tiny` or `base` Whisper models
+- **🎯 Accuracy**: Use `large` Whisper model
+- **⚖️ Balance**: Use `base` model (recommended)
+- **🔍 Search**: Adjust chunk limit based on your needs
 
-## License
+## 📚 Dependencies
+
+### Core Technologies
+- **Streamlit**: Web application framework
+- **OpenAI Whisper**: State-of-the-art speech recognition
+- **Snowflake Cortex**: Enterprise search and AI platform
+- **WebRTC**: Real-time audio/video communication
+
+### Key Libraries
+- `streamlit-webrtc`: WebRTC integration for Streamlit
+- `snowflake-snowpark-python`: Snowflake connectivity
+- `av`: Audio/video processing
+- `pydub`: Audio manipulation
+- `torch`: PyTorch for ML models
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
 
 [Add your license information here]
 
-## Contributing
+---
 
-[Add contributing guidelines here]
+**🎤 Ready to revolutionize how you interact with your knowledge base? Start speaking and get instant, intelligent answers!**

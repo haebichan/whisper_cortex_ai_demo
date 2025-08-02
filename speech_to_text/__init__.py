@@ -1,6 +1,6 @@
-"""Speech-to-Text application with OpenAI Whisper and Streamlit WebRTC."""
+"""Voice-Powered Cortex Search application with OpenAI Whisper and Streamlit WebRTC."""
 
-from .main import main, SpeechToTextApp
+from .main import main, VoiceCortexSearchApp
 
-__version__ = "1.0.0"
-__all__ = ["main", "SpeechToTextApp"]
+__version__ = "2.0.0"
+__all__ = ["main", "VoiceCortexSearchApp"]
