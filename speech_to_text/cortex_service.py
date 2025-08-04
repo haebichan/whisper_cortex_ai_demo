@@ -103,13 +103,27 @@ class CortexSearchService:
                 logger.warning("No connection.json file found in expected locations")
                 return None
             
+            # Resolve environment variables in the format ${VAR_NAME}
+            import os
+            resolved_parameters = {}
+            for key, value in connection_parameters.items():
+                if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+                    env_var = value[2:-1]  # Remove ${ and }
+                    resolved_value = os.environ.get(env_var)
+                    if resolved_value is None:
+                        logger.error(f"Environment variable {env_var} not found for key '{key}'")
+                        return None
+                    resolved_parameters[key] = resolved_value
+                else:
+                    resolved_parameters[key] = value
+            
             # Extract and store cortex search service name if provided
-            if 'cortex_search_service' in connection_parameters:
-                self.cortex_search_service = connection_parameters.pop('cortex_search_service')
+            if 'cortex_search_service' in resolved_parameters:
+                self.cortex_search_service = resolved_parameters.pop('cortex_search_service')
                 logger.info(f"Using Cortex Search service from config: {self.cortex_search_service}")
             
-            # Create session using connection parameters (without the cortex_search_service key)
-            session = Session.builder.configs(connection_parameters).create()
+            # Create session using resolved connection parameters
+            session = Session.builder.configs(resolved_parameters).create()
             logger.info(f"Successfully connected using connection.json from {config_file_used}")
             return session
             
