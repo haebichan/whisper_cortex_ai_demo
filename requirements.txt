@@ -1,22 +1,15 @@
-# Core dependencies
-streamlit>=1.28.0
-streamlit-webrtc
+streamlit>=1.33
+audio-recorder-streamlit>=0.0.8
+soundfile>=0.12
+numpy>=1.24
+python-dotenv>=1.0
 
-# Audio processing
-av	
-pydub
-numpy>=1.21.0
+# Transcription backends (default: faster-whisper)
+faster-whisper>=1.0
+openai>=1.40.0
+whisper @ git+https://github.com/openai/whisper.git#egg=whisper
 
-# Machine Learning
-openai-whisper
-torch>=1.9.0
-
-# Network/Communication
-twilio
-
-# Utilities
-pathlib2>=2.3.0
-
-# Snowflake dependencies for Cortex Search
-snowflake-snowpark-python
-snowflake-connector-python
+# Snowflake (Search via Snowpark/Core + LLM via SQL COMPLETE)
+snowflake-connector-python>=3.10
+snowflake-snowpark-python>=1.19
+snowflake-core>=0.10
